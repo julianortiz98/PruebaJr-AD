@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Campaña WhatsApp — Tablero operativo</title>
+<meta name="description" content="Tablero operativo del funnel de entrega, SLA de respuesta y volumen horario de la campaña de WhatsApp, con datos reales de prueba.txt." />
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap masthead__row">
+    <div>
+      <h1 class="masthead__title">Campaña WhatsApp — tablero operativo</h1>
+      <p class="masthead__subtitle" id="masthead-subtitle">cargando periodo…</p>
+    </div>
+    <div class="masthead__stats" id="masthead-stats"></div>
+  </div>
+</header>
+
+<nav class="filter-rail" aria-label="Filtros del tablero">
+  <div class="wrap filter-rail__inner">
+    <div class="filter-group filter-group--dates">
+      <span class="filter-group__label">Periodo</span>
+      <div class="date-controls">
+        <label>Desde <input id="date-from" type="date" aria-label="Fecha inicial"></label>
+        <label>Hasta <input id="date-to" type="date" aria-label="Fecha final"></label>
+        <button class="text-btn" id="reset-days" type="button">Todo el periodo</button>
+      </div>
+      <span class="panel__hint">limitado a las fechas reales del dataset</span>
+    </div>
+    <div class="filter-group">
+      <span class="filter-group__label">Estado</span>
+      <select class="status-select" id="status-filter" aria-label="Filtrar por estado del mensaje">
+        <option value="todos">Todos los estados</option>
+        <option value="sent">Enviado</option>
+        <option value="delivered">Entregado</option>
+        <option value="read">Leído</option>
+        <option value="failed">Fallido</option>
+      </select>
+      <span class="panel__hint">aplica a mensajes salientes: funnel, plantillas y errores</span>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero" aria-label="Hallazgo principal">
+    <div>
+      <div class="hero__figure" id="hero-number">—</div>
+      <p class="hero__caption" id="hero-caption">Calculando…</p>
+    </div>
+    <div class="hero__chips">
+      <div class="chip"><b id="chip-sla-avg">—</b><span>SLA promedio</span></div>
+      <div class="chip"><b id="chip-sla-median">—</b><span>SLA mediana</span></div>
+      <div class="chip"><b id="chip-lt1">—</b><span>responde en &lt;1 min</span></div>
+    </div>
+  </section>
+
+  <section class="grid-row">
+    <div class="panel" style="--marker: var(--fail)">
+      <div class="panel__head">
+        <h2 class="panel__title">Funnel de entrega</h2>
+        <span class="panel__hint">% de mensajes salientes por estado final</span>
+      </div>
+      <div class="bar-list" id="funnel-bars"></div>
+      <p class="panel__note" id="funnel-note"></p>
+    </div>
+
+    <div class="panel" style="--marker: var(--data)">
+      <div class="panel__head">
+        <h2 class="panel__title">SLA de respuesta</h2>
+      </div>
+      <div class="kpi-grid" id="sla-kpis"></div>
+      <div class="bar-list" id="sla-bars"></div>
+      <p class="panel__note" id="sla-note"></p>
+    </div>
+  </section>
+
+  <section class="panel panel--full" style="--marker: var(--wait)">
+    <div class="panel__head">
+      <h2 class="panel__title">Volumen incoming por hora</h2>
+      <span class="panel__hint">para dimensionar turnos (Workforce Management)</span>
+    </div>
+    <div class="heatmap-scroll">
+      <div class="heatmap" id="heatmap"></div>
+      <div class="heat-hourlabels" id="heat-hourlabels"></div>
+    </div>
+    <p class="panel__note" id="heatmap-note"></p>
+  </section>
+
+  <section class="grid-row grid-row--even">
+    <div class="panel" style="--marker: var(--ok)">
+      <div class="panel__head">
+        <h2 class="panel__title">Categorías de mensajes entrantes</h2>
+      </div>
+      <div class="bar-list" id="categorias-bars"></div>
+      <p class="panel__note" id="categorias-note"></p>
+    </div>
+
+    <div class="panel" style="--marker: var(--data)">
+      <div class="panel__head">
+        <h2 class="panel__title">Plantillas: envíos y fallos</h2>
+      </div>
+      <table class="data-table" id="plantillas-table">
+        <thead>
+          <tr>
+            <th>Plantilla</th>
+            <th>Envíos</th>
+            <th>Fallidos</th>
+            <th>% fallo</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel panel--full" id="errores-panel" style="--marker: var(--fail)">
+    <div class="panel__head">
+      <h2 class="panel__title">Errores en mensajes fallidos</h2>
+    </div>
+    <div class="bar-list" id="errores-bars"></div>
+    <p class="panel__note" id="errores-note"></p>
+  </section>
+
+  <section class="panel panel--full" style="--marker: var(--paper-dim)">
+    <div class="panel__head">
+      <h2 class="panel__title">Diagnóstico y acciones recomendadas</h2>
+      <span class="panel__hint">dato → interpretación → acción propuesta</span>
+    </div>
+    <div class="diagnosis-list" id="diagnosis-list"></div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  <p><strong>Fuente:</strong> extracto real <code>prueba.txt</code> → <code>reto1_pipeline.py</code> → <code>mensajes_limpios.csv</code> → agregados con la misma lógica de <code>05_consultas_dashboard.sql</code>. Ningún número de este tablero fue inventado.</p>
+  <p><strong>Actualización:</strong> los datos van embebidos en <code>js/data.js</code> en el momento de generarlo. Regenerar cada 15–30&nbsp;min con <code>scripts/generar_data.py</code> es el refresh — nadie consulta la base de datos al abrir esta página.</p>
+  <p id="footer-generated"></p>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
